@@ -4,9 +4,10 @@ from pathlib import Path
 from datetime import datetime
 from config.dnh_brand import BRANCHES, ROOM_TYPES, BRAND
 
+
 class ImageGenerator:
     def __init__(self, use_pollinations=True):
-        pass
+        self.base_url = "https://image.pollinations.ai/prompt"
 
     def generate(self, branch, room_type, theme, style="luxury"):
         prompt = self._build_prompt(branch, room_type, theme, style)
@@ -15,8 +16,9 @@ class ImageGenerator:
 
     def _generate_pollinations(self, prompt, fname):
         try:
-            url = f"https://image.pollinations.ai/prompt/{quote(prompt)}?width=1080&height=1350&nologo=true"
-            resp = requests.get(url, timeout=90)
+            seed = datetime.now().microsecond
+            url = f"{self.base_url}/{quote(prompt)}?width=1080&height=1350&nologo=true&seed={seed}"
+            resp = requests.get(url, timeout=55)
             resp.raise_for_status()
             fname.write_bytes(resp.content)
             print(f"[ImageGenerator] Pollinations ✅ → {fname}")
